@@ -58,7 +58,7 @@ public struct CompletionShell: RawRepresentable, Hashable, CaseIterable {
   }
 }
 
-struct CompletionsGenerator {
+internal struct CompletionsGenerator {
   var shell: CompletionShell
   var command: ParsableCommand.Type
   
@@ -100,7 +100,7 @@ struct CompletionsGenerator {
 extension ArgumentDefinition {
   /// Returns a string with the arguments for the callback to generate custom completions for
   /// this argument.
-  func customCompletionCall(_ commands: [ParsableCommand.Type]) -> String {
+  internal func customCompletionCall(_ commands: [ParsableCommand.Type]) -> String {
     let subcommandNames = commands.dropFirst().map { $0._commandName }.joined(separator: " ")
     let argumentName = preferredNameForSynopsis?.synopsisString
           ?? self.help.keys.first?.rawValue ?? "---"
@@ -109,7 +109,7 @@ extension ArgumentDefinition {
 }
 
 extension ParsableCommand {
-  fileprivate static var compositeCommandName: [String] {
+  internal static var compositeCommandName: [String] {
     if let superCommandName = configuration._superCommandName {
       return [superCommandName] + _commandName.split(separator: " ").map(String.init)
     } else {
@@ -119,7 +119,7 @@ extension ParsableCommand {
 }
 
 extension Sequence where Element == ParsableCommand.Type {
-  func completionFunctionName() -> String {
+  internal func completionFunctionName() -> String {
     "_" + self.flatMap { $0.compositeCommandName }
       .uniquingAdjacentElements()
       .joined(separator: "_")

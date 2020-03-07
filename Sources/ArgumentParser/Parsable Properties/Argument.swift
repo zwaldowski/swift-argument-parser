@@ -32,6 +32,7 @@ public struct Argument<Value>:
     self._parsedValue = _parsedValue
   }
   
+  /// :nodoc:
   public init(from decoder: Decoder) throws {
     try self.init(_decoder: decoder)
   }
@@ -51,6 +52,7 @@ public struct Argument<Value>:
   }
   
   /// The value presented by this property wrapper.
+  /// :nodoc:
   public var wrappedValue: Value {
     get {
       switch _parsedValue {
@@ -67,6 +69,7 @@ public struct Argument<Value>:
 }
 
 extension Argument: CustomStringConvertible {
+  /// :nodoc:
   public var description: String {
     switch _parsedValue {
     case .value(let v):
