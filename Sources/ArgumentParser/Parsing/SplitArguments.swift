@@ -16,7 +16,7 @@ enum ParsedArgument: Equatable, CustomStringConvertible {
   /// `--foo` or `-f`
   case name(Name)
   /// `--foo=bar`
-  case nameWithValue(Name, String)
+  case nameWithValue(Name, Substring)
   
   init<S: StringProtocol>(_ str: S) where S.SubSequence == Substring {
     let indexOfEqualSign = str.firstIndex(of: "=") ?? str.endIndex
@@ -24,7 +24,7 @@ enum ParsedArgument: Equatable, CustomStringConvertible {
     let name = Name(baseName)
     self = value.isEmpty
       ? .name(name)
-      : .nameWithValue(name, String(value))
+      : .nameWithValue(name, value)
   }
   
   /// An array of short arguments and their indices in the original base
@@ -59,7 +59,7 @@ enum ParsedArgument: Equatable, CustomStringConvertible {
   var value: String? {
     switch self {
     case .name: return nil
-    case let .nameWithValue(_, v): return v
+    case let .nameWithValue(_, v): return String(v)
     }
   }
 
@@ -608,7 +608,7 @@ extension SplitArguments {
 
 private extension ParsedArgument {
   init(longArgRemainder remainder: Substring) throws {
-    try self.init(longArgRemainder: remainder, makeName: { Name.long(String($0)) })
+    try self.init(longArgRemainder: remainder, makeName: { Name.long($0) })
   }
   
   init(longArgWithSingleDashRemainder remainder: Substring) throws {
@@ -618,7 +618,7 @@ private extension ParsedArgument {
       ///     `-c=1`      ->  `Name.short("c")`
       /// Otherwise, treat it as a long name with single dash.
       ///     `-count=1`  ->  `Name.longWithSingleDash("count")`
-      $0.count == 1 ? Name.short($0.first!) : Name.longWithSingleDash(String($0))
+      $0.count == 1 ? Name.short($0.first!) : Name.longWithSingleDash($0)
     })
   }
   
@@ -629,7 +629,7 @@ private extension ParsedArgument {
         throw ParserError.invalidOption(makeName(remainder).synopsisString)
       }
       let after = remainder.index(after: equalIdx)
-      let value = String(remainder[after..<remainder.endIndex])
+      let value = remainder[after...]
       self = .nameWithValue(makeName(name), value)
     } else {
       self = .name(makeName(remainder))

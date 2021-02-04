@@ -118,14 +118,14 @@ extension NameSpecification.Element {
   internal func name(for key: InputKey) -> Name? {
     switch self {
     case .long:
-      return .long(key.rawValue.convertedToSnakeCase(separator: "-"))
+      return .long(key.rawValue.convertedToSnakeCase(separator: "-")[...])
     case .short:
       guard let c = key.rawValue.first else { fatalError("Key '\(key.rawValue)' has not characters to form short option name.") }
       return .short(c)
     case .customLong(let name, let withSingleDash):
       return withSingleDash
-        ? .longWithSingleDash(name)
-        : .long(name)
+        ? .longWithSingleDash(name[...])
+        : .long(name[...])
     case .customShort(let name, let allowingJoined):
       return .short(name, allowingJoined: allowingJoined)
     }

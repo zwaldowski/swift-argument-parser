@@ -11,22 +11,22 @@
 
 enum Name: Hashable {
   /// A name (usually multi-character) prefixed with `--` (2 dashes) or equivalent.
-  case long(String)
+  case long(Substring)
   /// A single character name prefixed with `-` (1 dash) or equivalent.
   ///
   /// Usually supports mixing multiple short names with a single dash, i.e. `-ab` is equivalent to `-a -b`.
   case short(Character, allowingJoined: Bool = false)
   /// A name (usually multi-character) prefixed with `-` (1 dash).
-  case longWithSingleDash(String)
+  case longWithSingleDash(Substring)
   
   init(_ baseName: Substring) {
     assert(baseName.first == "-", "Attempted to create name for unprefixed argument")
     if baseName.hasPrefix("--") {
-      self = .long(String(baseName.dropFirst(2)))
+      self = .long(baseName.dropFirst(2))
     } else if baseName.count == 2 { // single character "-x" style
       self = .short(baseName.last!)
     } else { // long name with single dash
-      self = .longWithSingleDash(String(baseName.dropFirst()))
+      self = .longWithSingleDash(baseName.dropFirst())
     }
   }
 }
@@ -46,11 +46,11 @@ extension Name {
   var valueString: String {
     switch self {
     case .long(let n):
-      return n
+      return String(n)
     case .short(let n, _):
       return String(n)
     case .longWithSingleDash(let n):
-      return n
+      return String(n)
     }
   }
   
