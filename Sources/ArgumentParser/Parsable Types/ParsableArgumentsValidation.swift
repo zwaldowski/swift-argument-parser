@@ -40,7 +40,7 @@ extension ParsableArguments {
   static func _validate() throws {
     let validators: [ParsableArgumentsValidator.Type] = [
       PositionalArgumentsValidator.self,
-      ParsableArgumentsCodingKeyValidator.self,
+//      ParsableArgumentsCodingKeyValidator.self,
       ParsableArgumentsUniqueNamesValidator.self,
       NonsenseFlagsValidator.self,
     ]

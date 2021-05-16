@@ -34,4 +34,31 @@ struct Repeat: ParsableCommand {
     }
 }
 
-Repeat.main()
+struct CommandWrapper<Command: ParsableCommand>: ParsableCommand {
+  var command: Command = Command()
+
+  static var configuration: CommandConfiguration {
+    Command.configuration
+  }
+  
+  static var _commandName: String {
+    Command._commandName
+  }
+  
+  mutating func validate() throws {
+    try command.validate()
+  }
+  
+  mutating func run() throws {
+    try command.run()
+  }
+}
+
+extension CommandWrapper: CustomReflectable {
+  var customMirror: Mirror {
+    Mirror(reflecting: command)
+  }
+}
+
+
+CommandWrapper<CommandWrapper<Repeat>>.main()

@@ -59,7 +59,20 @@ final class ArgumentDecoder: Decoder {
   }
   
   func singleValueContainer() throws -> SingleValueDecodingContainer {
-    throw Error.topLevelHasNoSingleValueContainer
+    TopLevelContainer(codingPath: [], decoder: self)
+  }
+}
+
+struct TopLevelContainer: SingleValueDecodingContainer {
+  var codingPath: [CodingKey] = []
+  var decoder: ArgumentDecoder
+  
+  func decodeNil() -> Bool {
+    false
+  }
+  
+  func decode<T>(_ type: T.Type) throws -> T where T : Decodable {
+    try T.init(from: decoder)
   }
 }
 
