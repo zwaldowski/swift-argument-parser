@@ -21,7 +21,16 @@ public protocol ParsableCommand: ParsableArguments {
   /// name if not. This is a customization point so that a WrappedParsable
   /// can pass through the wrapped type's name.
   static var _commandName: String { get }
-  
+
+#if compiler(>=5.3) && $AsyncAwait
+  /// Runs this command.
+  ///
+  /// After implementing this method, you can run your command-line
+  /// application by calling the static `main()` method on the root type.
+  /// This method has a default implementation that prints help text
+  /// for this command.
+  mutating func run() async throws
+#else
   /// Runs this command.
   ///
   /// After implementing this method, you can run your command-line
@@ -29,6 +38,8 @@ public protocol ParsableCommand: ParsableArguments {
   /// This method has a default implementation that prints help text
   /// for this command.
   mutating func run() throws
+#endif
+
 }
 
 extension ParsableCommand {
@@ -83,6 +94,29 @@ extension ParsableCommand {
     return HelpGenerator(commandStack: stack).rendered(screenWidth: columns)
   }
 
+#if compiler(>=5.3) && $AsyncAwait
+  /// Parses an instance of this type, or one of its subcommands, from
+  /// the given arguments and calls its `run()` method, exiting with a
+  /// relevant error message if necessary.
+  ///
+  /// - Parameter arguments: An array of arguments to use for parsing. If
+  ///   `arguments` is `nil`, this uses the program's command-line arguments.
+  public static func main(_ arguments: [String]?) async {
+    do {
+      var command = try parseAsRoot(arguments)
+      try await command.run()
+    } catch {
+      exit(withError: error)
+    }
+  }
+
+  /// Parses an instance of this type, or one of its subcommands, from
+  /// command-line arguments and calls its `run()` method, exiting with a
+  /// relevant error message if necessary.
+  public static func main() async {
+    await self.main(nil)
+  }
+#else
   /// Parses an instance of this type, or one of its subcommands, from
   /// the given arguments and calls its `run()` method, exiting with a
   /// relevant error message if necessary.
@@ -104,4 +138,5 @@ extension ParsableCommand {
   public static func main() {
     self.main(nil)
   }
+#endif
 }

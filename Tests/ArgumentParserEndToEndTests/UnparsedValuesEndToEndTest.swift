@@ -26,7 +26,7 @@ fileprivate struct Qux: ParsableArguments {
 fileprivate struct Quizzo: ParsableArguments {
   @Option() var name: String
   @Flag() var verbose = false
-  let count = 0
+  var count = 0
 }
 
 extension UnparsedValuesEndToEndTests {
