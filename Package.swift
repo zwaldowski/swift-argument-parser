@@ -23,7 +23,7 @@ var package = Package(
     targets: [
         .target(
             name: "ArgumentParser",
-            dependencies: []),
+            exclude: [ "CMakeLists.txt" ]),
         .target(
             name: "ArgumentParserTestHelpers",
             dependencies: ["ArgumentParser"]),
